@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>para mi cielo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&family=Sacramento&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-pink: #FFF0F3;
+      --card-pink: #FFE6EC;
+      --accent-pink: #FFB3C1;
+      --deep-pink: #FF758F;
+      --soft-yellow: #FFF3B0;
+      --text-main: #593145;
+      --text-muted: #8C536D;
+      --white: #FFFFFF;
+      --shadow: 0 8px 24px rgba(255, 117, 143, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-pink);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .bg-heart-text {
+      position: fixed;
+      font-family: 'Sacramento', cursive;
+      font-size: 2.2rem;
+      color: var(--accent-pink);
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatSlow 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatSlow {
+      0% { transform: translateY(0) rotate(-5deg); }
+      100% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    /* CONTROLES DE MÚSICA DE FONDO */
+    .music-control-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 3000;
+      background: var(--deep-pink);
+      color: var(--white);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* PANTALLA DE INICIO (INDEX) */
+    #welcome-screen {
+      position: fixed;
+      inset: 0;
+      background-color: var(--bg-pink);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .welcome-card {
+      background: var(--white);
+      padding: 35px 25px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      max-width: 380px;
+      width: 100%;
+      border: 3px solid var(--card-pink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .pusheen-img {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+
+    .welcome-btn-group {
+      display: flex;
+      gap: 15px;
+      width: 100%;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .btn-main {
+      background-color: var(--accent-pink);
+      color: var(--white);
+      border: none;
+      padding: 14px 28px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(255, 179, 193, 0.4);
+    }
+
+    .btn-main:hover {
+      background-color: var(--deep-pink);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: var(--card-pink);
+      color: var(--text-muted);
+      border: none;
+      padding: 14px 24px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: #ffd0dc;
+    }
+
+    /* MODAL GATO ENOJADO */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(89, 49, 69, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--white);
+      padding: 30px 20px;
+      border-radius: 25px;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+      border: 3px solid var(--deep-pink);
+      box-shadow: var(--shadow);
+      animation: popIn 0.3s ease;
+    }
+
+    .angry-msg {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+      color: var(--deep-pink);
+      margin-top: 15px;
+      text-transform: lowercase;
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    #main-content {
+      display: none;
+      width: 100%;
+      max-width: 700px;
+      padding: 40px 20px 80px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .main-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 3rem;
+      color: var(--deep-pink);
+      line-height: 1.1;
+      margin-bottom: 5px;
+      letter-spacing: -0.5px;
+    }
+
+    .main-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: lowercase;
+    }
+
+    .section-box {
+      background: var(--white);
+      border-radius: 28px;
+      padding: 30px 25px;
+      margin-bottom: 35px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--card-pink);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.8rem;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* CARTAS */
+    .letters-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .letter-card {
+      background: var(--bg-pink);
+      border-radius: 20px;
+      border: 2px solid var(--card-pink);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .letter-header {
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.2rem;
+      color: var(--deep-pink);
+      background: var(--card-pink);
+    }
+
+    .letter-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+      color: var(--deep-pink);
+      font-family: 'Quicksand', sans-serif;
+      font-weight: bold;
+    }
+
+    .letter-card.open .letter-icon {
+      transform: rotate(180deg);
+    }
+
+    .letter-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 22px;
+      line-height: 1.7;
+      color: var(--text-main);
+      font-size: 1rem;
+      text-align: justify;
+    }
+
+    .letter-card.open .letter-body {
+      max-height: 2000px;
+      padding: 22px;
+    }
+
+    .letter-body p {
+      margin-bottom: 12px;
+    }
+
+    .letter-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* MEDIA */
+    .media-card {
+      background: var(--bg-pink);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      border: 2px solid var(--card-pink);
+    }
+
+    .tiktok-btn {
+      display: inline-block;
+      background: var(--deep-pink);
+      color: var(--white);
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(255, 117, 143, 0.3);
+      margin-top: 10px;
+    }
+
+    .tiktok-btn:hover {
+      background: var(--text-main);
+      transform: translateY(-2px);
+    }
+
+    .spotify-frame {
+      border-radius: 18px;
+      width: 100%;
+      height: 352px;
+      border: none;
+    }
+
+    /* GALERÍA POLAROID */
+    .upload-area {
+      border: 2px dashed var(--accent-pink);
+      background: var(--bg-pink);
+      padding: 20px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 25px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .upload-area:hover {
+      background: var(--card-pink);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .polaroid {
+      position: relative;
+      background: var(--white);
+      padding: 12px 12px 20px 12px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      transform: rotate(-1deg);
+      transition: transform 0.3s ease;
+    }
+
+    .polaroid:nth-child(even) {
+      transform: rotate(1deg);
+    }
+
+    .polaroid:hover {
+      transform: scale(1.03) rotate(0deg);
+      z-index: 10;
+    }
+
+    .polaroid-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: var(--card-pink);
+    }
+
+    .polaroid-caption {
+      text-align: center;
+      font-family: 'Sacramento', cursive;
+      font-size: 1.4rem;
+      color: var(--text-main);
+      margin-top: 10px;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: var(--deep-pink);
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .delete-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-family: 'Sacramento', cursive;
+      font-size: 1.8rem;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- REPRODUCTOR DE MÚSICA DE FONDO (Lover Is a Day - Cuco) -->
+  <audio id="bgMusic" loop src="cancion.mp3"></audio>
+  <button id="musicToggleBtn" class="music-control-btn" onclick="toggleMusic()">
+    <span id="musicIcon">pause</span> música
+  </button>
+
+  <!-- ELEMENTOS DE FONDO -->
+  <div class="bg-heart-text" style="top: 10%; left: 8%;">&lt;3</div>
+  <div class="bg-heart-text" style="top: 30%; right: 10%;">&lt;3</div>
+  <div class="bg-heart-text" style="top: 65%; left: 5%;">&lt;3</div>
+  <div class="bg-heart-text" style="top: 85%; right: 8%;">&lt;3</div>
+
+  <!-- PANTALLA DE INICIO (INDEX) -->
+  <div id="welcome-screen">
+    <div class="welcome-card">
+      <img class="pusheen-img" src="chiveado.jpg" alt="Pusheen chiveado">
+      <div class="welcome-btn-group">
+        <button class="btn-main" onclick="enterSite()">sí amor</button>
+        <button class="btn-secondary" onclick="showAngryModal()">no</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE ERROR (NO) -->
+  <div class="modal-overlay" id="angry-modal">
+    <div class="modal-content">
+      <img class="pusheen-img" src="enojado.jpg" alt="Pusheen enojado">
+      <div class="angry-msg">di que si tonto</div>
+      <button class="btn-main" style="margin-top: 18px; width: 100%;" onclick="closeAngryModal()">de acuerdo</button>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div id="main-content">
+    
+    <header>
+      <h1 class="main-title">para mi cielo</h1>
+      <div class="main-subtitle">de Brissa</div>
+    </header>
+
+    <!-- SECCIÓN 1: CARTITAS -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2 class="section-title">Cartitas</h2>
+        <div class="section-subtitle">para q siempre sepas q te amo</div>
+      </div>
+
+      <div class="letters-container">
+        <!-- CARTA I -->
+        <div class="letter-card" onclick="toggleLetter(this)">
+          <div class="letter-header">
+            <span>Carta I</span>
+            <span class="letter-icon">v</span>
+          </div>
+          <div class="letter-body">
+            <p>Tienes que saber que me gustas muchísimo y que llegaste justo cuando menos me lo esperaba. Lo que siento por ti no es algo superficial ni de un momento; va mucho más allá de lo sentimental y me llena el corazón de una forma súper bonita.</p>
+            <p>Amo cada pequeño detalle tuyo. Me encanta cómo te ríes cuando digo o hago alguna tontería en llamada, amo esa sensación de paz enorme que me da escucharte hablar y sentir que estás conmigo a través de la pantalla. Me enseñaste que no se necesita pasar meses o años para saber cuándo realmente quieres a alguien con todo el corazón.</p>
+            <p>Decidí dejarte entrar a mi vida porque desde el primer instante me di cuenta de que eres exactamente esa persona que me hace sonreír sin esfuerzo y que tengo metida en mi mente todo el día. Te amo y me da igual si todo ha fluido rápido, porque estar en llamadas contigo y platicar diario es de lo más lindo que me pasa. Aún así, me faltan palabras para expresarte todo lo que siento por ti, porque esto es tan bonito que a veces ni se puede explicar por completo super bonita super linda.</p>
+          </div>
+        </div>
+
+        <!-- CARTA II -->
+        <div class="letter-card" onclick="toggleLetter(this)">
+          <div class="letter-header">
+            <span>Carta II</span>
+            <span class="letter-icon">v</span>
+          </div>
+          <div class="letter-body">
+            <p>Quiero darte las gracias, principalmente por haber llegado a mi vida. No sé si el destino te puso en mi camino o me puso a mí en el tuyo, pero lo único que sé es que juntarnos fue de las mejores cosas que me han pasado.</p>
+            <p>Aunque todavía no nos hemos podido ver en persona, cada llamada, cada noche jugando juntos, las risas y las pláticas interminables se sienten tan reales y cerquitas. Llegas a darme alegrías todos los días y a sacarme una sonrisa boba cada vez que pienso en ti o me acuerdo de lo bien que la pasamos cuando jugamos.</p>
+            <p>Me he dado cuenta de la persona tan increíble y única que eres. Por nada del mundo quiero perderte. Sonará exagerado o empalagoso, pero no me veo sin ti ni compartiendo esto con nadie más; quiero que seas tú y solo tú. Me faltan palabras para escribirte todo lo que me enamora de ti, pero solo quiero que recuerdes siempre que te amo como a nadie y te quiero en mi vida siempre.</p>
+          </div>
+        </div>
+
+        <!-- CARTA III -->
+        <div class="letter-card" onclick="toggleLetter(this)">
+          <div class="letter-header">
+            <span>Carta III</span>
+            <span class="letter-icon">v</span>
+          </div>
+          <div class="letter-body">
+            <p>Antes de empezar a hablar contigo, de verdad siento que mi vida era una rutina sin parar de la cual no sabía ni cómo salir. Me sentía atrapada en lo mismo todos los días, no encontraba mucho qué hacer, me la pasaba durmiendo casi todo el día para que el tiempo pasara rápido y me sentía bastante sola.</p>
+            <p>A veces me la pasaba triste la mayor parte del tiempo, e incluso muchas veces sin razón alguna, solo por esa sensación de vacío o rutina en la que estaba. Pero desde que tú llegaste y empezamos a hablar, todo cambió de una forma hermosa. Le diste luz a mis días, me diste un motivo enorme para sonreír al despertar y para emocionarme cuando llega la hora de hablar o jugar juntos.</p>
+            <p>Llegaste a cambiar mi mundo por completo y me demostraste que la vida puede ser bonita cuando tienes a alguien tan especial a tu lado. Gracias por devolverme esa alegría y por estar aquí conmigo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: TIKTOK -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2 class="section-title">Colección de TikTok</h2>
+        <div class="section-subtitle">hice una colección especial para ti en el cual guardaré videos diariamente</div>
+      </div>
+      <div class="media-card">
+        <p style="margin-bottom: 15px; font-weight: 600;">Haz clic abajo para ver todos los videos que te voy guardando:</p>
+        <a href="https://www.tiktok.com/@br1iis/collection/%3C3-7699636807252986645?is_from_webapp=1&sender_device=pc" target="_blank" class="tiktok-btn">
+          Ver Colección en TikTok
+        </a>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: SPOTIFY -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2 class="section-title">Playlist</h2>
+        <div class="section-subtitle">especialmente para ti</div>
+      </div>
+      <div class="media-card" style="padding: 10px;">
+        <iframe class="spotify-frame" src="https://open.spotify.com/embed/playlist/3gg2euJtSAc5zXAwzhDxjn?utm_source=generator&theme=0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 4: GALERÍA POLAROID -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2 class="section-title">Nuestra Galería</h2>
+        <div class="section-subtitle">fotos que iremos guardando con el tiempo</div>
+      </div>
+
+      <div class="upload-area" onclick="document.getElementById('photoInput').click()">
+        <p style="font-weight: 700; color: var(--deep-pink);">agregar imágenes</p>
+        <input type="file" id="photoInput" class="file-input" accept="image/*" onchange="handlePhotoUpload(event)">
+      </div>
+
+      <div class="photo-grid" id="photoGrid">
+        <div class="polaroid">
+          <img class="polaroid-img" src="beso.jpg" alt="Pusheen beso">
+          <div class="polaroid-caption">te amo</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      te amo &lt;3
+    </footer>
+
+  </div>
+
+  <script>
+    const music = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicToggleBtn');
+    const musicIcon = document.getElementById('musicIcon');
+
+    function enterSite() {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+      
+      music.play().then(() => {
+        musicBtn.style.display = 'flex';
+      }).catch(e => {
+        console.log('Música de fondo no reproducida automáticamente:', e);
+      });
+
+      loadStoredPhotos();
+    }
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        musicIcon.textContent = 'pause';
+      } else {
+        music.pause();
+        musicIcon.textContent = 'play';
+      }
+    }
+
+    function showAngryModal() {
+      document.getElementById('angry-modal').classList.add('active');
+    }
+
+    function closeAngryModal() {
+      document.getElementById('angry-modal').classList.remove('active');
+    }
+
+    function toggleLetter(card) {
+      card.classList.toggle('open');
+    }
+
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const caption = prompt("Escribe un mensaje para esta foto:") || "nosotros <3";
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageData = e.target.result;
+        const photoId = Date.now();
+        addPhotoToGrid(imageData, caption, photoId, true);
+        savePhotoToStorage(imageData, caption, photoId);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addPhotoToGrid(src, caption, id, isUserUploaded = false) {
+      const photoGrid = document.getElementById('photoGrid');
+      const polaroid = document.createElement('div');
+      polaroid.className = 'polaroid';
+      if (id) polaroid.setAttribute('data-id', id);
+
+      let deleteButtonHtml = '';
+      if (isUserUploaded) {
+        deleteButtonHtml = `<button class="delete-btn" onclick="deletePhoto(${id}, this)">X</button>`;
+      }
+
+      polaroid.innerHTML = `
+        ${deleteButtonHtml}
+        <img class="polaroid-img" src="${src}" alt="Foto">
+        <div class="polaroid-caption">${caption}</div>
+      `;
+      photoGrid.appendChild(polaroid);
+    }
+
+    function savePhotoToStorage(src, caption, id) {
+      const storedPhotos = JSON.parse(localStorage.getItem('brissa_photos') || '[]');
+      storedPhotos.push({ src, caption, id });
+      try {
+        localStorage.setItem('brissa_photos', JSON.stringify(storedPhotos));
+      } catch (e) {
+        console.log('Espacio de almacenamiento lleno');
+      }
+    }
+
+    function deletePhoto(id, btnElement) {
+      let storedPhotos = JSON.parse(localStorage.getItem('brissa_photos') || '[]');
+      storedPhotos = storedPhotos.filter(photo => photo.id !== id);
+      localStorage.setItem('brissa_photos', JSON.stringify(storedPhotos));
+
+      const polaroid = btnElement.closest('.polaroid');
+      if (polaroid) {
+        polaroid.remove();
+      }
+    }
+
+    function loadStoredPhotos() {
+      const storedPhotos = JSON.parse(localStorage.getItem('brissa_photos') || '[]');
+      storedPhotos.forEach(photo => {
+        addPhotoToGrid(photo.src, photo.caption, photo.id, true);
+      });
+    }
+  </script>
+</body>
+</html>
